@@ -19,15 +19,17 @@ namespace OpenGL {
     }
     
     void MRIRenderingView::VisitMRINode(MRINode* node){
+        // Draw "nucleus"
         ApplyMesh(node->northPole.get());
-        //ApplyMesh(node->southPole.get());
+        ApplyMesh(node->southPole.get());
 
+        // Draw net magnetization
         glBegin(GL_LINES);
-        glColor3f(1,0,0);
-        glVertex3f(0, 0, 0);
 
-        glVertex3f(0, 20, 0);
-        
+        glColor3f(1,1,0);
+        glVertex3f(0,0,0);
+        glVertex3fv(node->netMagnetization.ToArray());
+
         glEnd();
     }
 
