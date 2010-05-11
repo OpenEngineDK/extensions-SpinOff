@@ -1,4 +1,4 @@
-// MRI node.
+// MRI rendering view.
 // -------------------------------------------------------------------
 // Copyright (C) 2010 OpenEngine.dk (See AUTHORS) 
 // 
@@ -7,21 +7,25 @@
 // See the GNU General Public License for more details (see LICENSE). 
 //--------------------------------------------------------------------
 
+#ifndef _MRI_RENDERING_VIEW_H_
+#define _MRI_RENDERING_VIEW_H_
+
+#include <Renderers/OpenGL/RenderingView.h>
 #include <Scene/MRINode.h>
 
-#include <Utils/MeshCreator.h>
-
-using namespace OpenEngine::Utils::MeshCreator;
-
 namespace OpenEngine {
-    namespace Scene {
+namespace Renderers {
+namespace OpenGL {
 
-        MRINode::MRINode() {
-            northPole = CreateCube(10, 1, Vector<3, float>(1,0,0));
-            southPole = CreateCube(10, 1, Vector<3, float>(1,1,1));
+    class MRIRenderingView : public RenderingView {
+    public:
+        MRIRenderingView();
 
-            netMagnetization = Vector<3, float>(0,20,0);
-        }
+        void VisitMRINode(MRINode* node);
+    };
 
-    }
 }
+}
+}
+
+#endif
