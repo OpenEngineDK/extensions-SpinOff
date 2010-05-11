@@ -1,0 +1,7 @@
+# SpinOff dependencies
+
+darcs /extensions/SpinOff			http://openengine.dk/code/extensions/SpinOff
+darcs /extensions/MeshUtils			http://openengine.dk/code/extensions/MeshUtils
+
+darcs-dev /extensions/SpinOff			fh.daimi.au.dk:/users/cgd/code/extensions/SpinOff
+darcs-dev /extensions/MeshUtils			fh.daimi.au.dk:/users/cgd/code/extensions/MeshUtils
