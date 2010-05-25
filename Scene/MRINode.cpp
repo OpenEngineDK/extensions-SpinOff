@@ -30,7 +30,20 @@ namespace OpenEngine {
             verts = southPole->GetGeometrySet()->GetVertices();
             *verts -= Vector<3, float>(0,0,5);
 
-            netMagnetization = Vector<3, float>(0,0,20);
+            // Create the global axis
+            yAxis = CreateCylinder(0.2, 20, 13, Vector<3, float>(0,1,0));
+            verts = yAxis->GetGeometrySet()->GetVertices();
+            *verts += Vector<3, float>(0,10,0);
+            
+            xAxis = CreateCylinder(0.2, 20, 13, Vector<3, float>(0,0,1));
+            verts = xAxis->GetGeometrySet()->GetVertices();
+            *verts += Vector<3, float>(0,10,0);
+
+            zAxis = CreateCylinder(0.2, 20, 13, Vector<3, float>(1,0,0));
+            verts = zAxis->GetGeometrySet()->GetVertices();
+            *verts += Vector<3, float>(0,10,0);
+
+            netMagnetization = Vector<3, float>(20,0,0);
 
             microTime = 0;
             

@@ -42,6 +42,9 @@ namespace OpenEngine {
 
             Geometry::MeshPtr northPole;
             Geometry::MeshPtr southPole;
+            Geometry::MeshPtr xAxis;
+            Geometry::MeshPtr yAxis;
+            Geometry::MeshPtr zAxis;
             Vector<3, float> netMagnetization;
 
             unsigned int microTime; // time in microseconds.

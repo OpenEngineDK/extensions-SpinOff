@@ -23,7 +23,22 @@ namespace OpenGL {
         ApplyMesh(node->northPole.get());
         ApplyMesh(node->southPole.get());
 
+        // Draw global coordinate system
+        glPushMatrix();
+        glRotatef(90, 1,0,0);
+        ApplyMesh(node->zAxis.get());
+        glPopMatrix();
+ 
+        ApplyMesh(node->yAxis.get());
+
+        glPushMatrix();
+        glRotatef(90, 0,0,-1);
+        ApplyMesh(node->xAxis.get());
+        glPopMatrix();
+
+
         // Draw net magnetization
+        glDisable(GL_DEPTH_TEST);
         glBegin(GL_LINES);
 
         glColor3f(1,1,0);
@@ -31,6 +46,7 @@ namespace OpenGL {
         glVertex3fv(node->netMagnetization.ToArray());
 
         glEnd();
+        glEnable(GL_DEPTH_TEST);
     }
 
 }
