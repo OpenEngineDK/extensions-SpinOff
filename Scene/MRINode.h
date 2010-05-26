@@ -56,6 +56,7 @@ namespace OpenEngine {
             Vector<3, float> netMagnetization;
 
             unsigned int microTime; // time in microseconds.
+            double time; // time in seconds
 
         public:
             MRINode();
@@ -68,7 +69,7 @@ namespace OpenEngine {
              * The position of the vector mag at time t, influenced
              * only by the static magnetic field B0.
              */
-            Vector<3, float> StaticFieldEffect(Vector<3, float> mag, double t);
+            Vector<3, float> StaticFieldEffect(Vector<3, float> mag);
         };
 
     }

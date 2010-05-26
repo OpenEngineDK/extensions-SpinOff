@@ -8,6 +8,8 @@
 //--------------------------------------------------------------------
 
 #include <Renderers/OpenGL/MRIRenderingView.h>
+#include <Math/Math.h>
+#include <Logging/Logger.h>
 
 namespace OpenEngine {
 namespace Renderers {
@@ -37,6 +39,17 @@ namespace OpenGL {
         glPopMatrix();
 
         // Draw coordinate frame
+        float degreesPrRad = 360 / (2 * PI);
+        glPushMatrix();
+        glRotatef(90, 0,0,-1);
+        glRotatef(degreesPrRad * node->time * node->larmorFrequency, 0, 0, 1);
+        ApplyMesh(node->e1.get());
+        glPopMatrix();
+
+        glPushMatrix();
+        glRotatef(degreesPrRad * node->time * node->larmorFrequency, 0, 0, 1);
+        ApplyMesh(node->e2.get());
+        glPopMatrix();
         
 
         // Draw net magnetization

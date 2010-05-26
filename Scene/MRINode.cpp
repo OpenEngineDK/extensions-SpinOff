@@ -68,19 +68,20 @@ namespace OpenEngine {
 
         void MRINode::Handle(Core::ProcessEventArg arg){
             microTime += arg.approx;
+            time = double(microTime) * 1e-13;
 
             // Lagt ned vector
-            Vector<3, float> M0(20,0,0);
+            Vector<3, float> M0(25,0,0);
 
-            netMagnetization = StaticFieldEffect(M0, double(microTime) * 1e-6);
+            netMagnetization = StaticFieldEffect(M0);
         }
 
-        Vector<3, float> MRINode::StaticFieldEffect(Vector<3, float> M0, double t){
+        Vector<3, float> MRINode::StaticFieldEffect(Vector<3, float> M0){
             Vector<3, float> ret = M0;
-            double cosToTime = cos(larmorFrequency * t);
-            double sinToTime = sin(larmorFrequency * t);
-            double T1exp = exp(-t/T1);
-            double T2exp = exp(-t/T2);
+            double cosToTime = cos(larmorFrequency * time);
+            double sinToTime = sin(larmorFrequency * time);
+            double T1exp = exp(-time/T1);
+            double T2exp = exp(-time/T2);
             ret[0] = T2exp * (M0[0] * cosToTime - M0[1] * sinToTime);
             ret[1] = T2exp * (M0[0] * sinToTime - M0[1] * cosToTime);
             ret[2] = M0[2] * T1exp + 40 * strengthB0 * (1-T1exp);
