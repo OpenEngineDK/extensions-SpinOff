@@ -57,11 +57,11 @@ namespace OpenEngine {
                         
             strengthB0 = 0.5; // tesla
             temperature = 293.15; // Kelvin
-            larmorFrequency = microGamma * strengthB0; // v = gamme * B
-            photonEnergi = PLANCK_CONSTANT * larmorFrequency * 1e-6; // E = h * v
+            larmorFrequency = gamma * strengthB0; // v = gamme * B
+            photonEnergi = PLANCK_CONSTANT * larmorFrequency; // E = h * v
             spinRelation = exp(-photonEnergi / (BOLTZMANN_CONSTANT * temperature));// N- / N+ = exp(-E / (k * T))
 
-            logger.info << "Larmor Frequency: " << larmorFrequency << "mHz and " << larmorFrequency * 1e-12<< "MHz" << logger.end;
+            logger.info << "Larmor Frequency: " << larmorFrequency << "Hz and " << larmorFrequency * 1e-6<< "MHz" << logger.end;
             logger.info << "Photon energi to cause transition " << photonEnergi << "J" << logger.end;
             logger.info << "Spin relation " << spinRelation << logger.end;
         }
@@ -72,7 +72,7 @@ namespace OpenEngine {
             // Lagt ned vector
             Vector<3, float> M0(20,0,0);
 
-            netMagnetization = StaticFieldEffect(M0, double(microTime));
+            netMagnetization = StaticFieldEffect(M0, double(microTime) * 1e-6);
         }
 
         Vector<3, float> MRINode::StaticFieldEffect(Vector<3, float> M0, double t){
