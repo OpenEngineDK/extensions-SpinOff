@@ -23,12 +23,12 @@ namespace OpenEngine {
     namespace Scene {
 
         MRINode::MRINode() {
-            northPole = CreateCube(10, 1, Vector<3, float>(1,0,0));
+            northPole = CreateSphere(2, 5, Vector<3, float>(1,0,0));
             IDataBlockPtr verts = northPole->GetGeometrySet()->GetVertices();
-            *verts += Vector<3, float>(0,0,5);
-            southPole = CreateCube(10, 1, Vector<3, float>(1,1,1));
+            *verts += Vector<3, float>(0,0,0.2);
+            southPole = CreateSphere(2, 5, Vector<3, float>(1,1,1));
             verts = southPole->GetGeometrySet()->GetVertices();
-            *verts -= Vector<3, float>(0,0,5);
+            *verts -= Vector<3, float>(0,0,0.2);
 
             // Create the global axis
             yAxis = CreateCylinder(0.2, 20, 13, Vector<3, float>(0,1,0));
@@ -54,11 +54,16 @@ namespace OpenEngine {
             netMagnetization = Vector<3, float>(20,0,0);
 
             microTime = 0;
-            
-            strengthB0 = 0.5;
-            larmorFrequency = microGamma * strengthB0;
+                        
+            strengthB0 = 0.5; // tesla
+            temperature = 293.15; // Kelvin
+            larmorFrequency = microGamma * strengthB0; // v = gamme * B
+            photonEnergi = PLANCK_CONSTANT * larmorFrequency * 1e-6; // E = h * v
+            spinRelation = exp(-photonEnergi / (BOLTZMANN_CONSTANT * temperature));// N- / N+ = exp(-E / (k * T))
 
             logger.info << "Larmor Frequency: " << larmorFrequency << "mHz and " << larmorFrequency * 1e-12<< "MHz" << logger.end;
+            logger.info << "Photon energi to cause transition " << photonEnergi << "J" << logger.end;
+            logger.info << "Spin relation " << spinRelation << logger.end;
         }
 
         void MRINode::Handle(Core::ProcessEventArg arg){
@@ -67,15 +72,15 @@ namespace OpenEngine {
             // Lagt ned vector
             Vector<3, float> M0(20,0,0);
 
-            netMagnetization = StaticFieldEffect(M0, microTime);
+            netMagnetization = StaticFieldEffect(M0, double(microTime));
         }
 
-        Vector<3, float> MRINode::StaticFieldEffect(Vector<3, float> M0, unsigned int t){
+        Vector<3, float> MRINode::StaticFieldEffect(Vector<3, float> M0, double t){
             Vector<3, float> ret = M0;
             double cosToTime = cos(larmorFrequency * t);
             double sinToTime = sin(larmorFrequency * t);
-            double T1exp = exp(-double(t)/double(T1));
-            double T2exp = exp(-double(t)/double(T2));
+            double T1exp = exp(-t/T1);
+            double T2exp = exp(-t/T2);
             ret[0] = T2exp * (M0[0] * cosToTime - M0[1] * sinToTime);
             ret[1] = T2exp * (M0[0] * sinToTime - M0[1] * cosToTime);
             ret[2] = M0[2] * T1exp + 40 * strengthB0 * (1-T1exp);

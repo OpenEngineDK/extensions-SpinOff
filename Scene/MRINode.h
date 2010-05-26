@@ -36,9 +36,16 @@ namespace OpenEngine {
             static const double e = 2.718281828;
             static const double gamma = 42.58e6; // hertz pr tesla
             static const double microGamma = 42.58e12; // microhertz pr tesla
+            static const double BOLTZMANN_CONSTANT = 1.3805e-23; // Joule / Kelvin
+            static const double PLANCK_CONSTANT = 6.626e-34; // Joule * seconds
+
 
             double strengthB0; // strength in tesla.
+            double temperature; // Kelvin
             double larmorFrequency; // microhertz
+            double photonEnergi; // Joule
+            double spinRelation; // Relation between spin at the lower
+                                 // energi level and spins at the upper energi level
 
             Geometry::MeshPtr northPole;
             Geometry::MeshPtr southPole;
@@ -62,7 +69,7 @@ namespace OpenEngine {
              * The position of the vector mag at time t, influenced
              * only by the static magnetic field B0.
              */
-            Vector<3, float> StaticFieldEffect(Vector<3, float> mag, unsigned int t);
+            Vector<3, float> StaticFieldEffect(Vector<3, float> mag, double t);
         };
 
     }
