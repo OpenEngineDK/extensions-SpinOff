@@ -43,12 +43,22 @@ namespace OpenEngine {
             verts = zAxis->GetGeometrySet()->GetVertices();
             *verts += Vector<3, float>(0,10,0);
 
+            // Create rotating axes
+            e1 = CreateCylinder(0.2, 20, 13, Vector<3, float>(1,0.5,0.5));
+            verts = e1->GetGeometrySet()->GetVertices();
+            *verts += Vector<3, float>(0,10,0);
+            e2 = CreateCylinder(0.2, 20, 13, Vector<3, float>(1,0,1));
+            verts = e2->GetGeometrySet()->GetVertices();
+            *verts += Vector<3, float>(0,10,0);
+
             netMagnetization = Vector<3, float>(20,0,0);
 
             microTime = 0;
             
             strengthB0 = 0.5;
-            microOmega0 = microGamma * strengthB0;
+            larmorFrequency = microGamma * strengthB0;
+
+            logger.info << "Larmor Frequency: " << larmorFrequency << "mHz and " << larmorFrequency * 1e-12<< "MHz" << logger.end;
         }
 
         void MRINode::Handle(Core::ProcessEventArg arg){
@@ -62,8 +72,8 @@ namespace OpenEngine {
 
         Vector<3, float> MRINode::StaticFieldEffect(Vector<3, float> M0, unsigned int t){
             Vector<3, float> ret = M0;
-            double cosToTime = cos(microOmega0 * t);
-            double sinToTime = sin(microOmega0 * t);
+            double cosToTime = cos(larmorFrequency * t);
+            double sinToTime = sin(larmorFrequency * t);
             double T1exp = exp(-double(t)/double(T1));
             double T2exp = exp(-double(t)/double(T2));
             ret[0] = T2exp * (M0[0] * cosToTime - M0[1] * sinToTime);

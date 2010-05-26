@@ -36,6 +36,8 @@ namespace OpenGL {
         ApplyMesh(node->xAxis.get());
         glPopMatrix();
 
+        // Draw coordinate frame
+        
 
         // Draw net magnetization
         glDisable(GL_DEPTH_TEST);

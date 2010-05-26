@@ -34,17 +34,19 @@ namespace OpenEngine {
             static const double T1 = 1e6; // spin lattice in microseconds.
             static const double T2 = 1e6; // spin spin in microseconds.
             static const double e = 2.718281828;
-            static const double gamma = 42.6e6; // hertz pr tesla
-            static const double microGamma = 42.6; // microhertz pr tesla
+            static const double gamma = 42.58e6; // hertz pr tesla
+            static const double microGamma = 42.58e12; // microhertz pr tesla
 
             double strengthB0; // strength in tesla.
-            double microOmega0; // microhertz
+            double larmorFrequency; // microhertz
 
             Geometry::MeshPtr northPole;
             Geometry::MeshPtr southPole;
             Geometry::MeshPtr xAxis;
             Geometry::MeshPtr yAxis;
             Geometry::MeshPtr zAxis;
+            Geometry::MeshPtr e1;
+            Geometry::MeshPtr e2;
             Vector<3, float> netMagnetization;
 
             unsigned int microTime; // time in microseconds.
