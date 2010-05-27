@@ -38,27 +38,24 @@ namespace OpenGL {
         ApplyMesh(node->xAxis.get());
         glPopMatrix();
 
-        // Draw coordinate frame
-        float degreesPrRad = 360 / (2 * PI);
-        glPushMatrix();
-        glRotatef(90, 0,0,-1);
-        glRotatef(degreesPrRad * node->time * node->larmorFrequency, 0, 0, 1);
-        ApplyMesh(node->e1.get());
-        glPopMatrix();
-
-        glPushMatrix();
-        glRotatef(degreesPrRad * node->time * node->larmorFrequency, 0, 0, 1);
-        ApplyMesh(node->e2.get());
-        glPopMatrix();
-        
-
-        // Draw net magnetization
         glDisable(GL_DEPTH_TEST);
         glBegin(GL_LINES);
 
+        // Draw coordinate frame
         glColor3f(1,1,0);
+        Vector<3, float> e1 = node->e1 * 20;
         glVertex3f(0,0,0);
-        glVertex3fv(node->netMagnetization.ToArray());
+        glVertex3fv(e1.ToArray());
+        
+        glColor3f(1,1,0);
+        Vector<3, float> e2 = node->e2 * 20;
+        glVertex3f(0,0,0);
+        glVertex3fv(e2.ToArray());
+
+        // Draw net magnetization
+        glColor3f(0,1,0);
+        glVertex3f(0,0,0);
+        glVertex3fv(node->globalNetMagnetization.ToArray());
 
         glEnd();
         glEnable(GL_DEPTH_TEST);

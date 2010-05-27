@@ -11,6 +11,7 @@
 #include <Geometry/Mesh.h>
 #include <Geometry/GeometrySet.h>
 #include <Resources/IDataBlock.h>
+#include <Math/Math.h>
 
 #include <Utils/MeshCreator.h>
 
@@ -23,12 +24,12 @@ namespace OpenEngine {
     namespace Scene {
 
         MRINode::MRINode() {
-            northPole = CreateSphere(2, 5, Vector<3, float>(1,0,0));
+            northPole = CreateSphere(2, 6, Vector<3, float>(1,0,0));
             IDataBlockPtr verts = northPole->GetGeometrySet()->GetVertices();
-            *verts += Vector<3, float>(0,0,0.2);
-            southPole = CreateSphere(2, 5, Vector<3, float>(1,1,1));
+            *verts += Vector<3, float>(0,0,0.05);
+            southPole = CreateSphere(2, 6, Vector<3, float>(1,1,1));
             verts = southPole->GetGeometrySet()->GetVertices();
-            *verts -= Vector<3, float>(0,0,0.2);
+            *verts -= Vector<3, float>(0,0,0.05);
 
             // Create the global axis
             yAxis = CreateCylinder(0.2, 20, 13, Vector<3, float>(0,1,0));
@@ -44,48 +45,82 @@ namespace OpenEngine {
             *verts += Vector<3, float>(0,10,0);
 
             // Create rotating axes
-            e1 = CreateCylinder(0.2, 20, 13, Vector<3, float>(1,0.5,0.5));
-            verts = e1->GetGeometrySet()->GetVertices();
-            *verts += Vector<3, float>(0,10,0);
-            e2 = CreateCylinder(0.2, 20, 13, Vector<3, float>(1,0,1));
-            verts = e2->GetGeometrySet()->GetVertices();
-            *verts += Vector<3, float>(0,10,0);
+            e1 = Vector<3, float>(1, 0, 0);
+            e2 = Vector<3, float>(0, 1, 0);
 
-            netMagnetization = Vector<3, float>(20,0,0);
+            m0 = Vector<3, float>(0,25,0);
+            localNetMagnetization = Vector<3, float>(0,0,20);
+            globalNetMagnetization = Vector<3, float>(0,0,20);
 
-            microTime = 0;
+            precessionTime = 0;
+            time = 0;
                         
             strengthB0 = 0.5; // tesla
+            strengthB1 = 0.5; // tesla
             temperature = 293.15; // Kelvin
-            larmorFrequency = gamma * strengthB0; // v = gamme * B
+            larmorFrequency = GYROMAGNETIC_RATIO * strengthB0; // v = gamme * B
             photonEnergi = PLANCK_CONSTANT * larmorFrequency; // E = h * v
             spinRelation = exp(-photonEnergi / (BOLTZMANN_CONSTANT * temperature));// N- / N+ = exp(-E / (k * T))
+            tau1 = (PI / 2.0) / (GYROMAGNETIC_RATIO * strengthB1);
 
             logger.info << "Larmor Frequency: " << larmorFrequency << "Hz and " << larmorFrequency * 1e-6<< "MHz" << logger.end;
             logger.info << "Photon energi to cause transition " << photonEnergi << "J" << logger.end;
             logger.info << "Spin relation " << spinRelation << logger.end;
+            logger.info << "90 degree pulse time " << tau1 << "seconds" << logger.end;
         }
 
         void MRINode::Handle(Core::ProcessEventArg arg){
-            microTime += arg.approx;
-            time = double(microTime) * 1e-13;
+            double dT = double(arg.approx) * 1e-13;
+            precessionTime += dT;
+            time += dT;
+
+            // Update the rotating framework
+            e1[0] = cos(larmorFrequency * precessionTime);
+            e1[1] = sin(larmorFrequency * precessionTime);
+            e2[0] = -sin(larmorFrequency * precessionTime);
+            e2[1] = cos(larmorFrequency * precessionTime);
 
             // Lagt ned vector
-            Vector<3, float> M0(25,0,0);
+            //GlobalStaticFieldEffect();
+            LocalStaticFieldEffect();
 
-            netMagnetization = StaticFieldEffect(M0);
         }
 
-        Vector<3, float> MRINode::StaticFieldEffect(Vector<3, float> M0){
-            Vector<3, float> ret = M0;
-            double cosToTime = cos(larmorFrequency * time);
-            double sinToTime = sin(larmorFrequency * time);
+        Vector<3, float> MRINode::GlobalStaticFieldEffect(){
             double T1exp = exp(-time/T1);
             double T2exp = exp(-time/T2);
-            ret[0] = T2exp * (M0[0] * cosToTime - M0[1] * sinToTime);
-            ret[1] = T2exp * (M0[0] * sinToTime - M0[1] * cosToTime);
-            ret[2] = M0[2] * T1exp + 40 * strengthB0 * (1-T1exp);
-            return ret;
+            globalNetMagnetization[0] = T2exp * (m0[0] * e1[0] + m0[1] * e2[0]);
+            globalNetMagnetization[1] = T2exp * (m0[0] * e1[1] + m0[1] * e2[1]);
+            globalNetMagnetization[2] = m0[2] * T1exp + 40 * strengthB0 * (1-T1exp);
+
+            // Update local vector
+            localNetMagnetization[0] = globalNetMagnetization[0] * e1[0] + globalNetMagnetization[1] * e1[1];
+            localNetMagnetization[1] = -globalNetMagnetization[0] * e1[1] + globalNetMagnetization[1] * e1[0];
+            localNetMagnetization[2] = globalNetMagnetization[2];
+
+            return globalNetMagnetization;
+        }
+
+        Vector<3, float> MRINode::LocalStaticFieldEffect(){
+            double T1exp = exp(-time/T1);
+            double T2exp = exp(-time/T2);
+            
+            localNetMagnetization[0] = T2exp * m0[0];
+            localNetMagnetization[1] = T2exp * m0[1];
+            localNetMagnetization[2] = m0[2] * T1exp + 40 * strengthB0 * (1-T1exp);
+            
+            // Update global vector
+            globalNetMagnetization[0] = localNetMagnetization[0] * e1[0] + localNetMagnetization[1] * e2[0];
+            globalNetMagnetization[1] = localNetMagnetization[0] * e1[1] + localNetMagnetization[1] * e2[1];
+            globalNetMagnetization[2] = localNetMagnetization[2];
+
+            return localNetMagnetization;
+        }
+
+        void MRINode::Flip(float degrees){
+            m0 = Vector<3, float>(0,25,0);
+            precessionTime += tau1;
+            time = 0;
         }
 
     }

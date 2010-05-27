@@ -31,45 +31,51 @@ namespace OpenEngine {
             OE_SCENE_NODE(MRINode, ISceneNode);
         public:
 
-            static const double T1 = 1; // spin lattice in seconds.
-            static const double T2 = 1; // spin spin in seconds.
+            static const double T1 = 1e-5; // spin lattice in seconds.
+            static const double T2 = 1e-6; // spin spin in seconds.
             static const double e = 2.718281828;
-            static const double gamma = 42.58e6; // hertz pr tesla
+            static const double GYROMAGNETIC_RATIO = 42.58e6; // hertz pr tesla
             static const double BOLTZMANN_CONSTANT = 1.3805e-23; // Joule / Kelvin
             static const double PLANCK_CONSTANT = 6.626e-34; // Joule * seconds
 
 
             double strengthB0; // strength in tesla.
+            double strengthB1; // strength in tesla of the RF magnetic field.
             double temperature; // Kelvin
             double larmorFrequency; // hertz
             double photonEnergi; // Joule
             double spinRelation; // Relation between spin at the lower
                                  // energi level and spins at the upper energi level
+            double tau1; // The time it takes the RF field to flip the
+                         // magnetization vector by 90 degrees.
 
             Geometry::MeshPtr northPole;
             Geometry::MeshPtr southPole;
             Geometry::MeshPtr xAxis;
             Geometry::MeshPtr yAxis;
             Geometry::MeshPtr zAxis;
-            Geometry::MeshPtr e1;
-            Geometry::MeshPtr e2;
-            Vector<3, float> netMagnetization;
+            Vector<3, float> e1;
+            Vector<3, float> e2;
+            Vector<3, float> m0;
+            Vector<3, float> localNetMagnetization;
+            Vector<3, float> globalNetMagnetization;
 
-            unsigned int microTime; // time in microseconds.
-            double time; // time in seconds
+            double precessionTime; // time in seconds
+            double time; // time since last action
 
         public:
             MRINode();
 
             void Handle(Core::ProcessEventArg arg);
 
-        private:
-
             /**
              * The position of the vector mag at time t, influenced
              * only by the static magnetic field B0.
              */
-            Vector<3, float> StaticFieldEffect(Vector<3, float> mag);
+            Vector<3, float> GlobalStaticFieldEffect();
+            Vector<3, float> LocalStaticFieldEffect();
+            
+            void Flip(float degrees);
         };
 
     }
