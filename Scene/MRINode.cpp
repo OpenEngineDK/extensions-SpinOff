@@ -22,6 +22,12 @@ using namespace OpenEngine::Utils::MeshCreator;
 
 namespace OpenEngine {
     namespace Scene {
+        const double MRINode::T1 = 1e-5; // spin lattice in seconds.
+        const double MRINode::T2 = 1e-6; // spin spin in seconds.
+        const double MRINode::e = 2.718281828;
+        const double MRINode::GYROMAGNETIC_RATIO = 42.58e6; // hertz pr tesla
+        const double MRINode::BOLTZMANN_CONSTANT = 1.3805e-23; // Joule / Kelvin
+        const double MRINode::PLANCK_CONSTANT = 6.626e-34; // Joule * seconds
 
         MRINode::MRINode() {
             northPole = CreateSphere(2, 6, Vector<3, float>(1,0,0));

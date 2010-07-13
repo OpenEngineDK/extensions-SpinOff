@@ -31,12 +31,12 @@ namespace OpenEngine {
             OE_SCENE_NODE(MRINode, ISceneNode);
         public:
 
-            static const double T1 = 1e-5; // spin lattice in seconds.
-            static const double T2 = 1e-6; // spin spin in seconds.
-            static const double e = 2.718281828;
-            static const double GYROMAGNETIC_RATIO = 42.58e6; // hertz pr tesla
-            static const double BOLTZMANN_CONSTANT = 1.3805e-23; // Joule / Kelvin
-            static const double PLANCK_CONSTANT = 6.626e-34; // Joule * seconds
+            static const double T1;                 // = 1e-5; // spin lattice in seconds.
+            static const double T2;                 // = 1e-6; // spin spin in seconds.
+            static const double e;                  // = 2.718281828;
+            static const double GYROMAGNETIC_RATIO; // = 42.58e6; // hertz pr tesla
+            static const double BOLTZMANN_CONSTANT; // = 1.3805e-23; // Joule / Kelvin
+            static const double PLANCK_CONSTANT;    // = 6.626e-34; // Joule * seconds
 
 
             double strengthB0; // strength in tesla.
