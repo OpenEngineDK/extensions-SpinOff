@@ -1,7 +1,7 @@
 # SpinOff dependencies
 
-darcs /extensions/SpinOff			http://openengine.dk/code/extensions/SpinOff
-darcs /extensions/MeshUtils			http://openengine.dk/code/extensions/MeshUtils
+git /extensions/SpinOff			https://github.com/OpenEngineDK/extensions-SpinOff.git
+git /extensions/MeshUtils			https://github.com/OpenEngineDK/extensions-MeshUtils.git
 
 git-dev /extensions/SpinOff			git@github.com:OpenEngineDK/extensions-SpinOff.git
 git-dev /extensions/MeshUtils			git@github.com:OpenEngineDK/extensions-MeshUtils.git
